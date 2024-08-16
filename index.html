@@ -1,16 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Font Viewer Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <h1>Font Viewer Game</h1>
-    <div class="centered"><canvas id="gameCanvas" width="800" height="600"></canvas></div>
+    <div class="centered">
+        <label for="file-upload" class="custom-file-upload">
+            Upload Font
+        </label>
+        <input id="file-upload" type="file" />
+    </div>
     <br>
-    <input type="file" id="fontFile" accept=".ttf, .otf"/>
+    <div class="centered">
+        <label for="fontSize">Font Size:&MediumSpace;</label>
+        <span id="fontSizeValue">20px</span>
+        &ThickSpace;
+        <input type="range" id="fontSize" name="fontSize" min="10" max="50" value="20">
+    </div>
+    <div class="centered">
+        <button id="btnBrickBreaker">Brick Breaker</button>
+        <button id="btnTetris">Tetris</button>
+        <button id="btnSpaceInvader">Space Invader</button>
+        &ThickSpace;&ThickSpace;&ThickSpace;
+        <button id="startButton" disabled>Start</button>
+    </div>
+    <div class="centered">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+    <br>
     <script src="initcanvas.js"></script>
 
     <script src="game.js"></script>
@@ -19,4 +42,5 @@
     <script src="tetris.js"></script>
     <script src="mazeRunner.js"></script>
 </body>
+
 </html>
