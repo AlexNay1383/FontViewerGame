@@ -2,45 +2,46 @@ function startBrickBreaker(font, fontSize) {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Function to generate a random character
-    const randomChar = () => String.fromCharCode(33 + Math.floor(Math.random() * 94));
+    // Function to set font size for canvas
+    function setFont() {
+            ctx.font = `${fontSize}px Arial`;
+    }
 
-    // Generate random characters for different elements
-    let paddleChar = randomChar();
-    let ballChar = randomChar();
+    // Random characters for different elements
+    function randomChar() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;\':",.<>?/';
+        return characters.charAt(Math.floor(Math.random() * characters.length));
+    }
 
-    // Initial sizes
-    let paddleWidth = canvas.width / 8;
-    let paddleHeight = 10;
+    let paddlechars = [];
+    for (let i = 0; i <= Math.ceil(canvas.width / fontSize) + 1; i++) {
+        paddlechars.push(randomChar());
+    }
+
+    // Calculate element sizes based on fontSize
+    let paddleWidth = fontSize * 8; // Paddle width proportional to font size
+    let paddleHeight = fontSize;    // Paddle height proportional to font size
     let paddleX = (canvas.width - paddleWidth) / 2;
-    let ballRadius = canvas.width / 50;
-    let currentFontSize = fontSize;  // Use passed font size
+    let ballRadius = fontSize / 2;  // Ball radius proportional to font size
 
-    // Size calculations
-    let brickRowCount = Math.floor(canvas.height / 100);
-    let brickColumnCount = Math.floor(canvas.width / 80);
-    let brickWidth = canvas.width / brickColumnCount - 10;
-    let brickHeight = canvas.height / (brickRowCount * 2);
-    let brickPadding = 10;
-    let brickOffsetTop = 30;
-    let brickOffsetLeft = 30;
+    let brickRowCount = Math.floor(canvas.height / (fontSize * 5));  // Number of brick rows based on fontSize
+    let brickColumnCount = Math.floor(canvas.width / (fontSize * 4)); // Number of brick columns based on fontSize
+    let brickWidth = canvas.width / brickColumnCount - fontSize / 2;  // Width adjusted based on number of columns and fontSize
+    let brickHeight = fontSize * 2; // Height adjusted based on fontSize
+    let brickPadding = fontSize / 2; // Padding adjusted based on fontSize
+    let brickOffsetTop = fontSize * 3;
+    let brickOffsetLeft = fontSize * 2;
 
     let bricks = [];
     for (let c = 0; c < brickColumnCount; c++) {
         bricks[c] = [];
         for (let r = 0; r < brickRowCount; r++) {
-            let isSpecial = Math.random() < 0.2;
-            bricks[c][r] = {
-                x: 0,
-                y: 0,
-                status: 1,
-                special: isSpecial,
-                char: randomChar()
-            };
+            let isSpecial = Math.random() < 0.2;  // 20% chance of being a special brick
+            bricks[c][r] = { x: 0, y: 0, status: 1, special: isSpecial, char: randomChar() };
         }
     }
 
-    let balls = [{ x: canvas.width / 2, y: canvas.height - 30, dx: 2, dy: -2 }];
+    let balls = [{ x: canvas.width / 2, y: canvas.height - paddleHeight - ballRadius, dx: 2, dy: -2, char: randomChar() }];
     let rightPressed = false;
     let leftPressed = false;
 
@@ -64,25 +65,25 @@ function startBrickBreaker(font, fontSize) {
     }
 
     function drawBall(ball) {
-        ctx.font = `${currentFontSize}px ${font}`;
+        setFont();
         ctx.fillStyle = "#0095DD";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(ballChar, ball.x, ball.y);  // Using random character for the ball
+        ctx.fillText(ball.char, ball.x, ball.y);  // Using random character for the ball
     }
 
     function drawPaddle() {
-        ctx.font = `${currentFontSize}px ${font}`;
+        setFont();
         ctx.fillStyle = "#0095DD";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        for (let i = 0; i < paddleWidth / currentFontSize; i++) {
-            ctx.fillText(paddleChar, paddleX + i * currentFontSize + currentFontSize / 2, canvas.height - paddleHeight / 2); // Using random character for the paddle
+        for (let i = 0; i < paddleWidth / fontSize; i++) {
+            ctx.fillText(paddlechars[i], paddleX + i * fontSize + fontSize / 2, canvas.height - paddleHeight / 2); // Using random character for the paddle
         }
     }
 
     function drawBricks() {
-        ctx.font = `${currentFontSize}px ${font}`;
+        setFont();
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         for (let c = 0; c < brickColumnCount; c++) {
@@ -92,8 +93,8 @@ function startBrickBreaker(font, fontSize) {
                     let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
                     bricks[c][r].x = brickX;
                     bricks[c][r].y = brickY;
-                    ctx.fillStyle = bricks[c][r].special ? "#FF6347" : "#0095DD";  // Red for special bricks, blue for normal bricks
-                    ctx.fillText(bricks[c][r].char, brickX + brickWidth / 2, brickY + brickHeight / 2);  // Use the unique character for the brick
+                    ctx.fillStyle = bricks[c][r].special ? "#FF6347" : "#0095DD";  // Red for special bricks
+                    ctx.fillText(bricks[c][r].char, brickX + brickWidth / 2, brickY + brickHeight / 2);
                 }
             }
         }
@@ -127,14 +128,10 @@ function startBrickBreaker(font, fontSize) {
         } else if (powerUpType < 0.66) {
             // Larger Ball
             ballRadius *= 1.5;
-            currentFontSize *= 1.5;  // Increase font size
-            setTimeout(() => {
-                ballRadius /= 1.5;  // Revert ball size
-                currentFontSize /= 1.5;  // Revert font size
-            }, 10000);  // Revert after 10 seconds
+            setTimeout(() => ballRadius /= 1.5, 10000);  // Revert after 10 seconds
         } else {
             // Multiply Balls
-            balls.push({ x: canvas.width / 2, y: canvas.height - 30, dx: 2, dy: -2 });
+            balls.push({ x: canvas.width / 2, y: canvas.height - paddleHeight - ballRadius, dx: 2, dy: -2, char: randomChar() });
         }
     }
 
@@ -145,29 +142,33 @@ function startBrickBreaker(font, fontSize) {
         drawPaddle();
         collisionDetection();
 
-        // Move ball
-        balls.forEach((ball) => {
-            if (!isPaused) {
-                ball.x += ball.dx;
-                ball.y += ball.dy;
-
-                if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) {
-                    ball.dx = -ball.dx;
-                }
-                if (ball.y + ball.dy < ballRadius) {
+        balls.forEach(ball => {
+            // Ball movement logic
+            if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) {
+                ball.dx = -ball.dx;
+            }
+            if (ball.y + ball.dy < ballRadius) {
+                ball.dy = -ball.dy;
+            } else if (ball.y + ball.dy > canvas.height - ballRadius) {
+                if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
                     ball.dy = -ball.dy;
-                } else if (ball.y + ball.dy > canvas.height - ballRadius) {
-                    if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
-                        ball.dy = -ball.dy;
-                    } else {
-                        // Game Over logic here
-                        document.location.reload();
+                } else {
+                    balls.splice(balls.indexOf(ball), 1);  // Remove ball if it misses the paddle
+                    if (balls.length === 0) {
+                        ctx.font = `${fontSize * 2}px ${font}`; // Bigger font for the game over message
+                        ctx.fillStyle = "#FF0000";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+                        setTimeout(() => document.location.reload(), 3000);  // Reload after 3 seconds
                     }
                 }
             }
+            ball.x += ball.dx;
+            ball.y += ball.dy;
         });
 
-        // Paddle movement
+        // Paddle movement logic
         if (rightPressed && paddleX < canvas.width - paddleWidth) {
             paddleX += 7;
         } else if (leftPressed && paddleX > 0) {
@@ -177,5 +178,5 @@ function startBrickBreaker(font, fontSize) {
         requestAnimationFrame(draw);
     }
 
-    draw(); // Start the draw loop
+    draw();
 }

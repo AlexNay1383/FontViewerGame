@@ -9,33 +9,43 @@ const brickBreakerButton = document.getElementById("btnBrickBreaker");
 const spaceInvadersButton = document.getElementById("btnSpaceInvader");
 const tetrisButton = document.getElementById("btnTetris");
 const startButton = document.getElementById('startButton');
+const messageDiv = document.getElementById("msg");
 
 let currentFontSize = 20;
 let font;
 let isPaused = true;
 let selectedGame = null;
 
+function msg(str)
+{
+    messageDiv.ATTRIBUTE_NODE.textContent = str;
+}
+
 fontSizeInput.addEventListener('input', function() {
     currentFontSize = this.value;
     fontSizeValue.textContent = `${currentFontSize}px`;
-    if (font) {
-        preview();
-    }
 });
 
 brickBreakerButton.addEventListener("click", () => {
     selectedGame = "Brick Breaker";
+    isPaused = true;
+    startButton.disabled = false;
 });
 
 tetrisButton.addEventListener("click", () => {
     selectedGame = "Tetris";
+    isPaused = true;
+    startButton.disabled = false;
 });
 
 spaceInvadersButton.addEventListener("click", () => {
     selectedGame = "Space Invader";
+    isPaused = true;
+    startButton.disabled = false;
 });
 
 startButton.addEventListener('click', function() {
+    startButton.disabled = true;
     if (font) {
         isPaused = false;
         startGame(font, currentFontSize);
