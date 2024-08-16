@@ -64,10 +64,12 @@ function startGame(font, fontsize) {
             startBrickBreaker(font, fontsize);
             break;
         case "Tetris":
-            startTetris();
+            startTetris(font, fontsize);
             break;
         case "Space Invader":
-            startSpaceInvader();
+            startSpaceInvader(font, fontsize);
             break;
+        case null:
+            alert("Please select a game");
     }
 }
